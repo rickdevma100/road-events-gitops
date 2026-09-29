@@ -65,7 +65,7 @@ Open in your browser:
 👉 **[http://localhost:8000/docs](http://localhost:8000/docs)** (or simply **[http://localhost:8000/](http://localhost:8000/)** which redirects automatically).
 
 *(If using ngrok tunnel)*:
-👉 **`https://roadevents.ngrok-free.app/docs`**
+👉 **`https://unmolded-runway-shelve.ngrok-free.dev/docs`**
 
 ### 2. Authenticating in Swagger UI
 1. Click the green **Authorize 🔓** button in the top right corner of Swagger UI.
