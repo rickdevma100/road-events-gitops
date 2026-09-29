@@ -7,38 +7,46 @@ ArgoCD GitOps declarative application definitions for the Road Events & Smart Bu
 road-events-gitops/
 ├── projects/
 │   └── road-events-project.yaml # ArgoCD AppProject definition (road-events)
+├── applicationset.yaml          # ArgoCD ApplicationSet (1-click deploy for all components)
 ├── apps/
 │   ├── road-events-stack.yaml   # Umbrella chart application (PostGIS + API)
-│   ├── postgres.yaml            # Dedicated PostGIS database application
-│   └── api.yaml                 # Dedicated FastAPI backend application
+│   ├── postgres.yaml            # Standalone PostGIS database application
+│   └── api.yaml                 # Standalone FastAPI backend application
 └── README.md
 ```
 
-## 🚀 Deploying with ArgoCD
+---
 
-### Step 1: Create the ArgoCD Project
-Apply the custom AppProject to ArgoCD:
+## 🚀 One-Command Deployment (Using ApplicationSet)
+
+With the **ApplicationSet**, you do **not** need to manually apply multiple YAML files. It automatically generates and orchestrates the applications with ordered sync waves (`postgres` wave 1 ➡️ `api` wave 2).
+
 ```bash
+# 1. Create the custom ArgoCD Project
 microk8s kubectl apply -f projects/road-events-project.yaml -n argocd
+
+# 2. Apply the ApplicationSet (automatically deploys both Postgres and API)
+microk8s kubectl apply -f applicationset.yaml -n argocd
 ```
 
-### Step 2: Deploy the Road-Events Stack
-Deploy the umbrella application managed under the `road-events` project:
+### Or combine them into a single command:
 ```bash
-microk8s kubectl apply -f apps/road-events-stack.yaml -n argocd
+microk8s kubectl apply -f projects/road-events-project.yaml -f applicationset.yaml -n argocd
 ```
 
-*(Alternatively, to deploy only the API component separately)*:
-```bash
-microk8s kubectl apply -f apps/api.yaml -n argocd
-```
+ArgoCD will immediately generate:
+* **`road-events-postgres`** (Sync Wave 1: PostGIS persistent database)
+* **`road-events-api`** (Sync Wave 2: FastAPI backend & Swagger UI)
 
-### Step 3: Verify ArgoCD Sync
+---
+
+## 🔍 Verify Deployment
+
 ```bash
-# Check ArgoCD applications status
+# Check generated applications in ArgoCD
 microk8s kubectl get applications -n argocd
 
-# Check running pods in road-events namespace
+# Check running workloads
 microk8s kubectl get pods -n road-events
 ```
 

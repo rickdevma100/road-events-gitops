@@ -1,0 +1,43 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: road-events-appset
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: road-events-appset
+    app.kubernetes.io/part-of: road-events
+spec:
+  generators:
+    - list:
+        elements:
+          - name: road-events-postgres
+            path: charts/postgres-postgis
+            syncWave: "1"
+          - name: road-events-api
+            path: charts/road-events-api
+            syncWave: "2"
+  template:
+    metadata:
+      name: "{{name}}"
+      namespace: argocd
+      labels:
+        app.kubernetes.io/name: "{{name}}"
+      annotations:
+        argocd.argoproj.io/sync-wave: "{{syncWave}}"
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
+    spec:
+      project: road-events
+      source:
+        repoURL: https://github.com/rickdevma100/road-events-helm-charts.git
+        targetRevision: main
+        path: "{{path}}"
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: road-events
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
