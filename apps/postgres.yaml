@@ -6,7 +6,7 @@ metadata:
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
-  project: default
+  project: road-events
   source:
     repoURL: https://github.com/rickdevma100/road-events-helm-charts.git
     targetRevision: main

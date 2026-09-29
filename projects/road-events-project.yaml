@@ -1,0 +1,32 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: road-events
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  description: "Road Events IoT & Smart Bulb Telemetry Infrastructure Project"
+  
+  # Repositories allowed for this project
+  sourceRepos:
+    - "https://github.com/rickdevma100/road-events-helm-charts.git"
+    - "https://github.com/rickdevma100/road-events-gitops.git"
+    - "*"
+    
+  # Deploy target clusters and namespaces
+  destinations:
+    - namespace: "road-events"
+      server: "https://kubernetes.default.svc"
+    - namespace: "argocd"
+      server: "https://kubernetes.default.svc"
+      
+  # Cluster-level resources whitelist
+  clusterResourceWhitelist:
+    - group: ""
+      kind: Namespace
+      
+  # Namespace-level resources whitelist (Deployments, Services, Secrets, ConfigMaps, PVCs, etc.)
+  namespaceResourceWhitelist:
+    - group: "*"
+      kind: "*"
